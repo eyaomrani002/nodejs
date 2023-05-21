@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+ 
 const cors = require('cors');
 
 dotenv.config();
@@ -13,7 +14,30 @@ app.use(express.json());
 // Les cors 
 app.use(cors());
 
-// Connexion à la base de données
+
+
+ 
+   
+
+
+const categorieRouter = require('./routes/categorie.route');
+app.use('/api/categories', categorieRouter);
+
+
+const scategorieRouter =require("./routes/scategorie.route")
+app.use('/api/scategories', scategorieRouter);
+
+const articleRouter =require("./routes/article.route")
+app.use('/api/articles', articleRouter);
+
+const userRouter =require("./routes/user.route") 
+app.use('/api/users', userRouter); 
+
+const cartRouter = require('./routes/cart.route');
+app.use('/api/cart', cartRouter);
+
+
+  // Connexion à la base de données
 mongoose.connect(process.env.DATABASECLOUD, {
   useNewUrlParser: true,
   useUnifiedTopology: true
@@ -26,42 +50,15 @@ mongoose.connect(process.env.DATABASECLOUD, {
   process.exit();
 });
 
-const categorieRouter = require('./routes/categorie.route');
-app.use('/api/categories', categorieRouter);
-
-
-const scategorieRouter =require("./routes/scategorie.route")
-app.use('/api/scategories', scategorieRouter);
-
-const articleRouter =require("./routes/article.route")
-app.use('/api/articles', articleRouter);
 
 
 
 app.get('/', (req, res) => {
-  res.send("bonjour");
+  res.send("hello ");
 });
 
 app.listen(process.env.PORT, () => {
   console.log(`Server is listening on port ${process.env.PORT}`);
 });
-
-
-
-// Connexion à la base données
-mongoose.connect(process.env.DATABASECLOUD, {
-    "version": 2,
-    "name": "nodejs-mongodb",
-    "builds": [
-      { "src": "app.js", "use": "@vercel/node" }
-    ],
-    "routes": [
-      { "src": "/(.*)", "dest": "/app.js" }
-    ]
-  });
-  
-
-
-
 
 module.exports = app;

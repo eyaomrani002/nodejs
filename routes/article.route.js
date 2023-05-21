@@ -2,8 +2,60 @@ const express = require('express');
 const router = express.Router();
 const Article = require('../models/article');
 
+
+
+
+
+// Add item to the cart
+exports.addToCart = async (req, res) => {
+  const { articleId, quantity } = req.body;
+
+  try {
+    // Find the article by ID in the database
+    const article = await Article.findById(articleId);
+
+    if (article) {
+      const cartItem = {
+        articleId: article._id,
+        name: article.designation,
+        price: article.prix,
+        quantity: quantity
+      };
+      cart.push(cartItem);
+      res.status(200).json({ message: 'Article added to the cart.' });
+    } else {
+      res.status(404).json({ message: 'Article not found.' });
+    }
+  } catch (error) {
+    console.error('Error adding article to cart:', error);
+    res.status(500).json({ message: 'Internal server error.' });
+  }
+};
 // Afficher la liste des articles.
+
+
 router.get('/', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const sortField = req.query.sort || 'designation';
+
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+
+    const articles = await Article.find()
+      .sort(sortField)
+      .skip(startIndex)
+      .limit(limit)
+      .exec();
+
+    res.status(200).json(articles);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+});
+
+/*router.get('/', async (req, res) => {
   try {
     const articles = await Article.find().populate('scategorieID').exec();
     res.status(200).json(articles);
@@ -11,6 +63,9 @@ router.get('/', async (req, res) => {
     res.status(404).json({ message: error.message });
   }
 });
+*/
+
+
 
 // Créer un nouvel article.
 router.post('/', async (req, res) => {
